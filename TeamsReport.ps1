@@ -8,6 +8,7 @@
 		Report all team channels, members and roles.
 #>
 #variables paths and such...
+Import-Module -Name MicrosoftTeams
 $CSV = "$env:USERPROFILE\Documents\Teams_UserAudit.csv"
 $date = Get-Date -Format 'MM.dd-HH.mm.ss'
 $newName = 'Teams_UserAudit-' + $date + '.csv'
@@ -67,13 +68,20 @@ function MSConnnect
 	{
 		try
 		{
-			Install-Module -Name MicrosoftTeams -Force -ErrorAction Stop
+			Install-Module PowershellGet -Force
+			Install-Module -Name MicrosoftTeams -RequiredVersion 2.4.0-preview -AllowPrerelease -Force
+			Connect-MicrosoftTeams
 		}
 		catch
 		{
 			(New-Object -COM WScript.Shell).PopUp("Failed to install MicrosoftTeams module, please install manually and try again.", 0, "Error", 48)
+			exit
 		}
-	}	
+	}
+	else
+	{
+		Connect-MicrosoftTeams
+	}
 }
 
 #check if output file already exists
@@ -88,6 +96,7 @@ if ($reportCheck -eq 'True')
 	catch
 	{
 		(New-Object -COM WScript.Shell).PopUp("Failed to generate report, please close $CSV and try again.", 0, "Error", 48)
+		exit
 	}
 }
 
@@ -127,6 +136,7 @@ if ($reportCheck -eq 'True')
 else
 {
 	(New-Object -COM WScript.Shell).PopUp("ERROR: Please try again, if the error persists please contact IT", 0, "Error", 48)
+	exit
 }
 
 #send as email?
