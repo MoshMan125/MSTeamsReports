@@ -68,7 +68,10 @@ function MSConnnect
 	{
 		try
 		{
-			Install-Module PowershellGet -Force
+			if ((Get-Module -Name PowerShellGet | Select-Object -ExpandProperty version) -lt '2.2.5')
+			{
+				Install-Module PowershellGet -Force
+			}
 			Install-Module -Name MicrosoftTeams -RequiredVersion 2.4.0-preview -AllowPrerelease -Force
 			Connect-MicrosoftTeams
 		}
